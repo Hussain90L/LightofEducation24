@@ -6,9 +6,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Academic PDF Repository{% endblock %}</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-   {% block extra_css %}{% endblock %}
+  {% block extra_css %}{% endblock %}
+
+  <style>
+    /* Brand Text Gradient */
+    .brand-text {
+      font-weight: 700;
+      font-size: 1.6rem;
+      background: linear-gradient(90deg, #0ea5e9, #3b82f6, #0ea5e9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 4s linear infinite;
+    }
+    @keyframes shine {
+      0% { background-position: 0%; }
+      100% { background-position: 200%; }
+    }
+
+    /* Footer Professional Style */
+    footer {
+      background-color: #0f172a;
+      color: #94a3b8;
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.9rem;
+      font-family: 'Poppins', sans-serif;
+      letter-spacing: 0.05em;
+      border-top: 1px solid #1e293b;
+      user-select: none;
+      font-weight: 500;
+    }
+    footer strong {
+      color: #3b82f6;
+    }
+  </style>
 </head>
 <body>
 
@@ -18,19 +51,19 @@
           <img src="https://i.postimg.cc/kMv1v8M5/photo_2025-05-17_01-14-27.jpg" alt="PDF Repo Logo" class="logo-img" />
       </a>
 
-<div class="brand-text-box">
-  <span class="brand-text">Light Of Education</span>
-</div>
+      <div class="brand-text-box">
+        <span class="brand-text">Light Of Education</span>
+      </div>
       
       <div class="search-container">
-  <button id="search-icon" aria-label="Search">
-    <i class="fa-brands fa-searchengin"></i>
-  </button>
-  <form id="search-form" class="search-form" action="{{ url_for('search') }}" method="GET">
-    <input type="text" name="query" placeholder="Search..." />
-    <button type="submit"><i class="fa-brands fa-searchengin"></i></button>
-  </form>
-</div>
+        <button id="search-icon" aria-label="Search">
+          <i class="fa-brands fa-searchengin"></i>
+        </button>
+        <form id="search-form" class="search-form" action="{{ url_for('search') }}" method="GET">
+          <input type="text" name="query" placeholder="Search..." />
+          <button type="submit"><i class="fa-brands fa-searchengin"></i></button>
+        </form>
+      </div>
 
       <ul class="nav-menu" id="nav-menu">
         <li><a href="{{ url_for('home') }}"><i class="fa-solid fa-house-chimney-user"></i> Home</a></li>
@@ -44,8 +77,9 @@
       <button class="hamburger" id="hamburger" aria-label="Toggle menu">&#9776;</button>
     </div>
   </nav>
+
   <main class="container">
-    <div id="particles-js">  </div>
+    <div id="particles-js"></div>
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <div class="flash-messages">
@@ -57,9 +91,11 @@
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
-      <footer>
-        Made by <strong>TeslaTech</strong>
-    </footer>
+
+  <footer>
+    Made by <strong>TeslaTech</strong>
+  </footer>
+
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script>
     const hamburger = document.getElementById('hamburger');
@@ -68,67 +104,34 @@
       navMenu.classList.toggle('show');
     });
 
-      particlesJS('particles-js', {
-  "particles": {
-    "number": {
-      "value": 40,
-      "density": {
-        "enable": true,
-        "value_area": 800
+    particlesJS('particles-js', {
+      "particles": {
+        "number": { "value": 40, "density": { "enable": true, "value_area": 800 } },
+        "color": { "value": "#00e0ff" },
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.3, "random": true },
+        "size": { "value": 3, "random": true },
+        "move": { "enable": true, "speed": 0.5, "direction": "none", "random": true, "out_mode": "out" }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": { "onhover": { "enable": true, "mode": "repulse" } },
+        "modes": { "repulse": { "distance": 100 } }
       }
-    },
-    "color": {
-      "value": "#00e0ff"
-    },
-    "shape": {
-      "type": "circle"
-    },
-    "opacity": {
-      "value": 0.3,
-      "random": true
-    },
-    "size": {
-      "value": 3,
-      "random": true
-    },
-    "move": {
-      "enable": true,
-      "speed": 0.5,
-      "direction": "none",
-      "random": true,
-      "out_mode": "out"
-    }
-  },
-  "interactivity": {
-    "detect_on": "canvas",
-    "events": {
-      "onhover": {
-        "enable": true,
-        "mode": "repulse"
+    });
+
+    const searchIcon = document.getElementById('search-icon');
+    const searchForm = document.getElementById('search-form');
+
+    searchIcon.addEventListener('click', () => {
+      searchForm.style.display = searchForm.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!document.querySelector('.search-container').contains(e.target)) {
+        searchForm.style.display = 'none';
       }
-    },
-    "modes": {
-      "repulse": {
-        "distance": 100
-      }
-    }
-  }
-});
-
-
-  const searchIcon = document.getElementById('search-icon');
-  const searchForm = document.getElementById('search-form');
-
-  searchIcon.addEventListener('click', () => {
-    searchForm.style.display = searchForm.style.display === 'flex' ? 'none' : 'flex';
-  });
-
-  // Optional: hide on outside click
-  document.addEventListener('click', (e) => {
-    if (!document.querySelector('.search-container').contains(e.target)) {
-      searchForm.style.display = 'none';
-    }
-  });
+    });
   </script>
 </body>
-</html> 
+</html>
