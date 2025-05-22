@@ -1,39 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" href="https://i.postimg.cc/SNr2HRwD/photo_2025-05-17_01-15-40-removebg-preview.png" type="image/png" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Academic PDF Repository{% endblock %}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&display=swap" rel="stylesheet" />
+  <link rel="icon" href="https://i.postimg.cc/SNr2HRwD/photo_2025-05-17_01-15-40-removebg-preview.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-   {% block extra_css %}{% endblock %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block extra_css %}{% endblock %}
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: #f4f7fa;
+      color: #333;
+    }
+    nav.navbar {
+      background: #0b1120;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .nav-container {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      width: 100%;
+    }
+    .logo-img {
+      height: 50px;
+    }
+    .brand-text {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #00e0ff;
+    }
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+      margin-left: auto;
+    }
+    .nav-menu li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+    .nav-menu li a:hover {
+      background: #1e293b;
+    }
+    .search-container {
+      position: relative;
+    }
+    .search-form {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+    .search-form input {
+      border: 1px solid #ddd;
+      padding: 0.4rem;
+      border-radius: 4px;
+    }
+    .search-form button {
+      background: #0ea5e9;
+      border: none;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    footer {
+      background: #0b1120;
+      color: #cbd5e1;
+      text-align: center;
+      padding: 1rem 0;
+      margin-top: 2rem;
+    }
+    .flash-messages {
+      margin: 1rem 0;
+      padding: 1rem;
+    }
+    .flash-message.success {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 0.5rem 1rem;
+      border-left: 5px solid #10b981;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .flash-message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 0.5rem 1rem;
+      border-left: 5px solid #ef4444;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+  </style>
 </head>
 <body>
-
   <nav class="navbar">
-    <div class="container nav-container">
-      <a href="{{ url_for('home') }}" class="logo">
-          <img src="https://i.postimg.cc/kMv1v8M5/photo_2025-05-17_01-14-27.jpg" alt="PDF Repo Logo" class="logo-img" />
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}">
+        <img src="https://i.postimg.cc/kMv1v8M5/photo_2025-05-17_01-14-27.jpg" alt="PDF Repo Logo" class="logo-img">
       </a>
-
-<div class="brand-text-box">
-  <span class="brand-text">Light Of Education</span>
-</div>
-      
+      <div class="brand-text-box">
+        <span class="brand-text">Light Of Education</span>
+      </div>
       <div class="search-container">
-  <button id="search-icon" aria-label="Search">
-    <i class="fa-brands fa-searchengin"></i>
-  </button>
-  <form id="search-form" class="search-form" action="{{ url_for('search') }}" method="GET">
-    <input type="text" name="query" placeholder="Search..." />
-    <button type="submit"><i class="fa-brands fa-searchengin"></i></button>
-  </form>
-</div>
-
+        <button id="search-icon" aria-label="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <form id="search-form" class="search-form" action="{{ url_for('search') }}" method="GET">
+          <input type="text" name="query" placeholder="Search...">
+          <button type="submit"><i class="fa-solid fa-search"></i></button>
+        </form>
+      </div>
       <ul class="nav-menu" id="nav-menu">
-        <li><a href="{{ url_for('home') }}"><i class="fa-solid fa-house-chimney-user"></i> Home</a></li>
+        <li><a href="{{ url_for('home') }}"><i class="fa-solid fa-house"></i> Home</a></li>
         {% if session.get('admin_logged_in') %}
           <li><a href="{{ url_for('upload') }}"><i class="fa-solid fa-upload"></i> Upload</a></li>
           <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
@@ -41,11 +141,10 @@
           <li><a href="{{ url_for('login') }}"><i class="fa-solid fa-user-lock"></i> Admin Login</a></li>
         {% endif %}
       </ul>
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu">&#9776;</button>
     </div>
   </nav>
   <main class="container">
-    <div id="particles-js">  </div>
+    <div id="particles-js"></div>
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <div class="flash-messages">
@@ -57,83 +156,66 @@
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
-      <footer>
-        Made by <strong>TeslaTech</strong>
-    </footer>
+  <footer>
+    Made by <strong>Humaidi</strong>
+  </footer>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script>
     const hamburger = document.getElementById('hamburger');
     const navMenu = document.getElementById('nav-menu');
-    hamburger.addEventListener('click', () => {
-      navMenu.classList.toggle('show');
+    const searchIcon = document.getElementById('search-icon');
+    const searchForm = document.getElementById('search-form');
+
+    if (hamburger) {
+      hamburger.addEventListener('click', () => {
+        navMenu.classList.toggle('show');
+      });
+    }
+
+    searchIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      searchForm.style.display = searchForm.style.display === 'flex' ? 'none' : 'flex';
     });
 
-      particlesJS('particles-js', {
-  "particles": {
-    "number": {
-      "value": 40,
-      "density": {
-        "enable": true,
-        "value_area": 800
+    document.addEventListener('click', (e) => {
+      if (!document.querySelector('.search-container').contains(e.target)) {
+        searchForm.style.display = 'none';
       }
-    },
-    "color": {
-      "value": "#00e0ff"
-    },
-    "shape": {
-      "type": "circle"
-    },
-    "opacity": {
-      "value": 0.3,
-      "random": true
-    },
-    "size": {
-      "value": 3,
-      "random": true
-    },
-    "move": {
-      "enable": true,
-      "speed": 0.5,
-      "direction": "none",
-      "random": true,
-      "out_mode": "out"
-    }
-  },
-  "interactivity": {
-    "detect_on": "canvas",
-    "events": {
-      "onhover": {
-        "enable": true,
-        "mode": "repulse"
+    });
+
+    particlesJS('particles-js', {
+      "particles": {
+        "number": {
+          "value": 40,
+          "density": { "enable": true, "value_area": 800 }
+        },
+        "color": { "value": "#00e0ff" },
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.3, "random": true },
+        "size": { "value": 3, "random": true },
+        "move": {
+          "enable": true,
+          "speed": 0.5,
+          "direction": "none",
+          "random": true,
+          "out_mode": "out"
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "repulse"
+          }
+        },
+        "modes": {
+          "repulse": {
+            "distance": 100
+          }
+        }
       }
-    },
-    "modes": {
-      "repulse": {
-        "distance": 100
-      }
-    }
-  }
-});
-
-
-  const searchIcon = document.getElementById('search-icon');
-  const searchForm = document.getElementById('search-form');
-
-  searchIcon.addEventListener('click', () => {
-    searchForm.style.display = searchForm.style.display === 'flex' ? 'none' : 'flex';
-  });
-
-  // Optional: hide on outside click
-  document.addEventListener('click', (e) => {
-    if (!document.querySelector('.search-container').contains(e.target)) {
-      searchForm.style.display = 'none';
-    }
-  });
+    });
   </script>
 </body>
 </html>
-
-
-
-
-
