@@ -30,6 +30,26 @@ SUBJECTS = [
     "ict"
 ]
 
+ADMISSION = {
+    "MEDICAL",
+    "BUET",
+    "CUET",
+    "RUET",
+    "KUET",
+    "IUT",
+    "DU",
+    "JU",
+    "CU",
+    "RU",
+    "JU",
+    "JnU",
+    "KU",
+    "CoU",
+    "Agri",
+    "GST",
+}
+
+
 # Helper: Validate mode and subject
 def valid_mode(mode):
     return mode.lower() in MODES
@@ -47,25 +67,41 @@ def generate_slug(title):
 def home():
     return render_template('home.html', modes=MODES)
 
+def valid_mode(mode):
+    return mode in ['academic', 'admission']
+
+def valid_subject(mode, subject):
+    if mode == 'academic':
+        return subject in SUBJECTS
+    elif mode == 'admission':
+        return subject in ADMISSION
+    return False
+
 @app.route('/<mode>')
 def mode_page(mode):
     mode = mode.lower()
     if not valid_mode(mode):
         return render_template('error.html', message='Invalid Mode'), 404
-    # Show all subjects as cards
-    return render_template('mode.html', mode=mode, subjects=SUBJECTS)
+    
+    if mode == 'academic':
+        subjects = SUBJECTS
+    elif mode == 'admission':
+        subjects = ADMISSION
+    else:
+        subjects = []
+
+    return render_template('mode.html', mode=mode, subjects=subjects)
+
 
 @app.route('/<mode>/<subject>')
 def subject_page(mode, subject):
     mode = mode.lower()
     subject = subject.lower()
-    if not valid_mode(mode) or not valid_subject(subject):
+    if not valid_mode(mode) or not valid_subject(mode, subject):
         return render_template('error.html', message='Invalid Mode or Subject'), 404
 
-    # No need to check db.modes — you're not using that collection
     pdfs = list(db.pdfs.find({'mode': mode, 'subject': subject}))
     return render_template('subject.html', mode=mode, subject=subject, pdfs=pdfs)
-
 
 @app.route('/pdf/<subject>/<filename>')
 def pdf_view(subject, filename):
@@ -108,10 +144,16 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.context_processor
+def inject_globals():
+    return dict(SUBJECTS=SUBJECTS, ADMISSION=ADMISSION)
+
+
 @app.route('/upload', methods=['GET', 'POST'])
 @admin_required
 def upload():
     if request.method == 'POST':
+        # Get form data and normalize
         mode = request.form.get('mode', '').lower()
         subject = request.form.get('subject', '').lower()
         title = request.form.get('title', '').strip()
@@ -119,31 +161,52 @@ def upload():
         description = request.form.get('description', '').strip()
         photo = request.form.get('photo', '').strip()
 
-        # Validation
         errors = []
-        if not valid_mode(mode):
+
+        # Validate mode
+        if mode not in MODES:
             errors.append('Invalid mode selected.')
-        if not valid_subject(subject):
-            errors.append('Invalid subject selected.')
+
+        # Validate subject based on mode
+        if mode == 'academic' and subject not in [s.lower() for s in SUBJECTS]:
+            errors.append('Invalid subject for academic mode.')
+        elif mode == 'admission' and subject not in [s.lower() for s in ADMISSION]:
+            errors.append('Invalid subject for admission mode.')
+
+        # Validate required fields
         if not title:
             errors.append('Title is required.')
         if not link:
             errors.append('Link is required.')
-        
+
+        # If errors, flash and re-render form with previous data
         if errors:
             for err in errors:
                 flash(err, 'danger')
-            return render_template('upload.html', modes=MODES, subjects=SUBJECTS, form=request.form)
+            return render_template(
+                'upload.html',
+                modes=MODES,
+                academic_subjects=SUBJECTS,
+                admission_subjects=ADMISSION,
+                form=request.form
+            )
 
+        # Generate filename slug
         filename = generate_slug(title)
 
-        # Check if already exists
+        # Check if this PDF metadata already exists
         exists = db.pdfs.find_one({'filename': filename, 'subject': subject, 'mode': mode})
         if exists:
             flash('A PDF with this title already exists for this subject and mode.', 'danger')
-            return render_template('upload.html', modes=MODES, subjects=SUBJECTS, form=request.form)
+            return render_template(
+                'upload.html',
+                modes=MODES,
+                academic_subjects=SUBJECTS,
+                admission_subjects=ADMISSION,
+                form=request.form
+            )
 
-        # Insert into DB
+        # Insert new PDF metadata document in database
         pdf_data = {
             'mode': mode,
             'subject': subject,
@@ -154,10 +217,21 @@ def upload():
             'photo': photo,
         }
         db.pdfs.insert_one(pdf_data)
+
         flash('PDF metadata uploaded successfully!', 'success')
+
+        # Redirect to subject page after successful upload
         return redirect(url_for('subject_page', mode=mode, subject=subject))
-    
-    return render_template('upload.html', modes=MODES, subjects=SUBJECTS)
+
+    # For GET request, show the upload form with default academic subjects
+    return render_template(
+        'upload.html',
+        modes=MODES,
+        academic_subjects=SUBJECTS,
+        admission_subjects=ADMISSION,
+        form=None
+    )
+
 
 
 @app.route('/search')
@@ -177,8 +251,6 @@ def search():
 
     results = list(db.pdfs.find(search_filter))
     return render_template('search_results.html', results=results, query=query)
-
-
 
 
 # Error handlers
