@@ -5,7 +5,7 @@
   <div class="subject-cards">
     {% for subject in subjects %}
     <a href="{{ url_for('subject_page', mode=mode, subject=subject) }}" class="subject-card">
-      {{ subject|title }}
+      {{ subject|upper }}
     </a>
     {% endfor %}
   </div>
