@@ -1,7 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Upload PDF Metadata{% endblock %}
+
 {% block content %}
   <h1>Upload PDF Metadata</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flashes">
+        {% for category, msg in messages %}
+          <li class="flash-{{ category }}">{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
   <form action="{{ url_for('upload') }}" method="POST" class="upload-form">
     <label for="mode">Mode:</label>
     <select name="mode" id="mode" required>
@@ -33,5 +45,56 @@
 
     <button type="submit" class="btn btn-primary">Upload</button>
   </form>
-  <p><a href="{{ url_for('home') }}"><i class="fa-solid fa-square-caret-left"></i> Back to Home</a></p>
+
+  <p><a href="{{ url_for('home') }}">← Back to Home</a></p>
+
+  <style>
+    .upload-form label { display: block; margin-top: 1rem; font-weight: bold; }
+    .upload-form input, .upload-form select, .upload-form textarea { width: 100%; padding: 0.5rem; margin-top: 0.3rem; }
+    .btn { margin-top: 1.5rem; padding: 0.7rem 1.2rem; }
+    .flashes { list-style: none; padding: 0; }
+    .flashes li { margin: 0.5rem 0; padding: 0.5rem; border-radius: 4px; }
+    .flash-danger { background-color: #f8d7da; color: #721c24; }
+    .flash-success { background-color: #d4edda; color: #155724; }
+  </style>
+
+  <script>
+    // You need to pass your SUBJECTS and ADMISSION lists from your Flask context as JSON
+    const academicSubjects = {{ SUBJECTS | tojson }};
+    const admissionSubjects = {{ ADMISSION | tojson }};
+
+    const modeSelect = document.getElementById('mode');
+    const subjectSelect = document.getElementById('subject');
+
+    function populateSubjects(subjects) {
+      // Clear existing options
+      subjectSelect.innerHTML = '<option value="" disabled selected>Select Subject</option>';
+      subjects.forEach(subj => {
+        const opt = document.createElement('option');
+        opt.value = subj;
+        opt.textContent = subj.charAt(0).toUpperCase() + subj.slice(1).toLowerCase();
+        subjectSelect.appendChild(opt);
+      });
+    }
+
+    modeSelect.addEventListener('change', function() {
+      if (this.value === 'academic') {
+        populateSubjects(academicSubjects);
+      } else if (this.value === 'admission') {
+        populateSubjects(admissionSubjects);
+      } else {
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select Subject</option>';
+      }
+    });
+
+    // On page load, if mode is already selected (e.g. validation error), populate subjects accordingly
+    window.addEventListener('DOMContentLoaded', () => {
+      if (modeSelect.value === 'academic') {
+        populateSubjects(academicSubjects);
+      } else if (modeSelect.value === 'admission') {
+        populateSubjects(admissionSubjects);
+      }
+    });
+  </script>
+
 {% endblock %}
