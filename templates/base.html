@@ -1,48 +1,134 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}DailyNest{% endblock %}</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" href="data:,">
+  <link rel="icon" href="https://i.postimg.cc/SNr2HRwD/photo_2025-05-17_01-15-40-removebg-preview.png" type="image/png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Academic PDF Repository{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+   {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-gray-900">
-  <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="{{ url_for('home') }}" class="font-bold text-lg">Daily<span class="text-indigo-600">Nest</span></a>
-      <div class="flex items-center gap-3">
-        {% if current_user.is_authenticated %}
-          <a href="{{ url_for('me') }}" class="px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200">My Posts</a>
-          <a href="{{ url_for('create') }}" class="px-3 py-1.5 rounded-full bg-indigo-600 text-white hover:bg-indigo-700">+ New</a>
-          <a href="{{ url_for('logout') }}" class="px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200">Logout</a>
+<body>
+
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="{{ url_for('home') }}" class="logo">
+          <img src="https://i.postimg.cc/kMv1v8M5/photo_2025-05-17_01-14-27.jpg" alt="PDF Repo Logo" class="logo-img" />
+      </a>
+
+<div class="brand-text-box">
+  <span class="brand-text">DevNest</span>
+</div>
+      
+      <div class="search-container">
+  <button id="search-icon" aria-label="Search">
+    <i class="fa-brands fa-searchengin"></i>
+  </button>
+  <form id="search-form" class="search-form" action="{{ url_for('search') }}" method="GET">
+    <input type="text" name="query" placeholder="Search..." />
+    <button type="submit"><i class="fa-brands fa-searchengin"></i></button>
+  </form>
+</div>
+
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="{{ url_for('home') }}"><i class="fa-solid fa-house-chimney-user"></i> Home</a></li>
+        {% if session.get('admin_logged_in') %}
+          <li><a href="{{ url_for('upload') }}"><i class="fa-solid fa-upload"></i> Upload</a></li>
+          <li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
         {% else %}
-          <a href="{{ url_for('login') }}" class="px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200">Login</a>
-          <a href="{{ url_for('register') }}" class="px-3 py-1.5 rounded-full bg-indigo-600 text-white hover:bg-indigo-700">Sign up</a>
+          <li><a href="{{ url_for('login') }}"><i class="fa-solid fa-user-lock"></i> Admin Login</a></li>
         {% endif %}
-      </div>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">&#9776;</button>
     </div>
   </nav>
-
-  <main class="max-w-5xl mx-auto px-4 py-6">
+  <main class="container">
+    <div id="particles-js">  </div>
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="space-y-2 mb-4">
-          {% for cat, msg in messages %}
-            <div class="p-3 rounded-lg border {% if cat == 'error' %}border-red-300 bg-red-50{% else %}border-emerald-300 bg-emerald-50{% endif %}">{{ msg }}</div>
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
           {% endfor %}
         </div>
       {% endif %}
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
+      <footer>
+        Developed by <strong>Hussain Ahmed</strong> | &copy; DevNest
+    </footer>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    hamburger.addEventListener('click', () => {
+      navMenu.classList.toggle('show');
+    });
 
-  <footer class="border-t mt-10">
-    <div class="max-w-5xl mx-auto px-4 py-6 text-sm text-gray-500">
-      © 2025 DailyNest — Developed by Hussain
-    </div>
-  </footer>
+      particlesJS('particles-js', {
+  "particles": {
+    "number": {
+      "value": 40,
+      "density": {
+        "enable": true,
+        "value_area": 800
+      }
+    },
+    "color": {
+      "value": "#00e0ff"
+    },
+    "shape": {
+      "type": "circle"
+    },
+    "opacity": {
+      "value": 0.3,
+      "random": true
+    },
+    "size": {
+      "value": 3,
+      "random": true
+    },
+    "move": {
+      "enable": true,
+      "speed": 0.5,
+      "direction": "none",
+      "random": true,
+      "out_mode": "out"
+    }
+  },
+  "interactivity": {
+    "detect_on": "canvas",
+    "events": {
+      "onhover": {
+        "enable": true,
+        "mode": "repulse"
+      }
+    },
+    "modes": {
+      "repulse": {
+        "distance": 100
+      }
+    }
+  }
+});
 
-  {% block scripts %}{% endblock %}
+
+  const searchIcon = document.getElementById('search-icon');
+  const searchForm = document.getElementById('search-form');
+
+  searchIcon.addEventListener('click', () => {
+    searchForm.style.display = searchForm.style.display === 'flex' ? 'none' : 'flex';
+  });
+
+  // Optional: hide on outside click
+  document.addEventListener('click', (e) => {
+    if (!document.querySelector('.search-container').contains(e.target)) {
+      searchForm.style.display = 'none';
+    }
+  });
+  </script>
 </body>
 </html>
