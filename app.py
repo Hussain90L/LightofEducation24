@@ -47,26 +47,22 @@ BOOKS = [
 ]
 
 NOTES = [
-    "physics",
-    "chemistry",
-    "math",
-    "biology",
-    "ict",
+    "Descrete Mathematics",
+    "Calculus",
+    "English",
+    "Instruction to Computing",
+    "Others",
 ]
 
 ALL_RESOURCES = [
-    "medical",
-    "buet",
-    "cuet",
-    "ruet",
-    "kuet",
-    "du",
-    "ju",
-    "ru",
-    "jnu",
-    "cou",
-    "agri",
-    "gst",
+    "C ",
+    "C++",
+    "Python",
+    "Java",
+    "Javasrip",
+    "Html",
+    "CSS",
+    "Database"
 ]
 
 # --- Helpers ---
@@ -277,3 +273,4 @@ def internal_error(e):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
