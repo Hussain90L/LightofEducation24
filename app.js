@@ -3,15 +3,16 @@ const mongoose = require('mongoose');
 const app = express();
 
 // MongoDB connection
-const mongoURI = "mongodb+srv://FubHus:12340@hussain.ghvacfv.mongodb.net/?retryWrites=true&w=majority";
+const mongoURI = "mongodb+srv://HUSSAIN:12340@hussain.m1ofcjp.mongodb.net/myDatabase?retryWrites=true&w=majority";
 
+// Connect to MongoDB
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MongoDB connected successfully!"))
   .catch(err => console.log("MongoDB connection error:", err));
 
 // Test route
 app.get('/', (req, res) => {
-  res.send('Website is connected to MongoDB!');
+  res.send('Website is connected to new MongoDB!');
 });
 
 // Data model with email
@@ -22,18 +23,28 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Add user route example
+// Add user example route
 app.get('/add-user', async (req, res) => {
-  const newUser = new User({ name: "Hussain", email: "humaidiofficial408@gmail.com" });
-  await newUser.save();
-  res.send("User with email added to MongoDB!");
+  try {
+    const newUser = new User({ name: "Hussain", email: "humaidiofficial408@gmail.com" });
+    await newUser.save();
+    res.send("User added to new MongoDB!");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error adding user");
+  }
 });
 
-// Read users route
+// Read users example route
 app.get('/users', async (req, res) => {
-  const users = await User.find();
-  res.json(users);
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error fetching users");
+  }
 });
 
 const PORT = 3000;
-app.listen(PORT, () => console.log(Server running on port ${PORT}));
+app.listen(PORT, () => console.log(Server running on port ${PORT}));
